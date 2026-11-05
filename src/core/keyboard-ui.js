@@ -62,10 +62,15 @@ const keyState = {
 
 let eventGate = () => true;
 let contextProvider = () => ({});
+let prepareInput = () => {};
 
-function loadKeybinds(bindings, { gate = () => true, context = () => ({}) } = {}) {
+function loadKeybinds(
+  bindings,
+  { gate = () => true, context = () => ({}), prepare = () => {} } = {},
+) {
   eventGate = gate;
   contextProvider = context;
+  prepareInput = prepare;
   keyState.bindings = bindings.map((binding) => ({
     ...binding,
     tokens: parseKeys(binding.keys),
@@ -90,6 +95,15 @@ function onKeydown(e) {
 
   const token = eventToToken(e);
   if (!token) return;
+
+  // Typing, modifier keys and unowned browser/native shortcuts never scan the page.
+  if (
+    keyState.pending.length ||
+    keyState.bindings.some(
+      (b) => b.tokens[0] === token && (!b.when || b.when(buildContext())),
+    )
+  )
+    prepareInput();
 
   if (!keyState.pending.length && handleCountPrefix(e)) return;
 
@@ -697,8 +711,10 @@ function openPicker({
 
     const move = (delta) => {
       if (!items.length) return;
+      list.children[active]?.classList.remove("active");
       active = (active + delta + items.length) % items.length;
-      render();
+      list.children[active]?.classList.add("active");
+      list.children[active]?.scrollIntoView({ block: "nearest" });
     };
 
     input.addEventListener("input", () => {

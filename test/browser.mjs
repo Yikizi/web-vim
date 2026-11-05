@@ -656,6 +656,26 @@ try {
       assert.equal((await state()).selection.item, "section8");
     },
   );
+  await load(
+    "https://example.test/large-list",
+    `<input id="typing"><main><ul>${Array.from({ length: 80 }, (_, i) => `<li><a href="/item${i}">Item ${i}</a></li>`).join("")}</ul></main>`,
+  );
+  const revisionBeforeChurn = (await state()).revision;
+  await page.evaluate(() => document.querySelector("main").classList.add("changed"));
+  await settle();
+  await page.focus("#typing");
+  await page.keyboard.type("ordinary typing");
+  await check("style churn and typing do not rebuild the page snapshot", async () =>
+    assert.equal((await state()).revision, revisionBeforeChurn),
+  );
+  await keys("Escape", "j");
+  const revisionBeforeScrolling = (await state()).revision;
+  for (let i = 0; i < 20; i++) await keys("j");
+  await check("scrolling through a list preserves the semantic snapshot", async () => {
+    assert.equal((await state()).revision, revisionBeforeScrolling);
+    assert.match((await state()).selection.item, /item20$/);
+    assert.ok(await page.evaluate(() => scrollY > 0));
+  });
   await check("no runtime errors", async () => assert.deepEqual(failures, []));
   console.log(`${passed} browser checks passed`);
 } finally {

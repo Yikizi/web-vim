@@ -18,6 +18,7 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
   let adapter = adapters.find((a) => a.matches()) || fallback;
   const nav = new Navigation();
   let dirty = true,
+    geometryDirty = false,
     mode = policy.defaultMode ?? "normal",
     busy = false,
     errors = [],
@@ -35,17 +36,36 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
       sessionStorage.setItem(storageKey, JSON.stringify([...nav.memory]));
     } catch {}
   }
-  function invalidate() {
+  function invalidate(rebuild = false) {
     dirty = true;
-    clearTimeout(timer);
+    // Coalesce DOM noise. Rebuild in the background only for structural changes;
+    // style/text churn is read on the next owned command, not every video frame.
+    needsRebuild ||= rebuild;
+    if (timer || document.hidden) return;
     timer = setTimeout(() => {
-      read();
-      draw();
+      timer = null;
+      if (document.hidden) return;
+      if (needsRebuild || (nav.item() && !visible(nav.item().element))) read();
+      if (nav.itemId) draw();
     }, 80);
   }
+  let needsRebuild = false;
   function read() {
-    if (!dirty) return errors.length ? null : nav.snapshot;
+    if (basePage !== location.href) dirty = true;
+    if (!dirty) {
+      if (geometryDirty) {
+        const region = nav.region();
+        // Lists/trees navigate by identity. Only grids and first selection need
+        // cached viewport coordinates; scrolling does not change DOM semantics.
+        if (region?.kind === "grid" || !nav.itemId)
+          for (const item of region?.items || []) item.rect = rect(item.element);
+        geometryDirty = false;
+      }
+      return errors.length ? null : nav.snapshot;
+    }
     dirty = false;
+    geometryDirty = false;
+    needsRebuild = false;
     try {
       adapter = adapters.find((a) => a.matches()) || fallback;
       const redirect = adapter.redirect?.();
@@ -167,7 +187,7 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
         ? (before.top + before.bottom) / 2
         : innerHeight / 2;
     window.scrollBy({ top: direction * innerHeight * 0.5 * count, behavior: "instant" });
-    dirty = true;
+    geometryDirty = true;
     if (!read()) return;
     const candidates = (nav.region()?.items || [])
       .map((item) => ({ item, r: rect(item.element) }))
@@ -466,6 +486,7 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
           ),
       );
   loadKeybinds(binds, {
+    prepare: read,
     context: () => ({
       native: mode === "native",
       counts: mode === "normal" && !errors.length && Boolean(nav.region()?.items.length),
@@ -481,7 +502,6 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
         return false;
       }
       if (mode === "passthrough") return false;
-      read();
       return true;
     },
   });
@@ -498,7 +518,21 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
           ),
       )
     )
-      invalidate();
+      invalidate(
+        records.some(
+          (r) =>
+            r.type === "childList" ||
+            [
+              "open",
+              "aria-modal",
+              "role",
+              "hidden",
+              "aria-hidden",
+              "collapsed",
+              "aria-expanded",
+            ].includes(r.attributeName),
+        ),
+      );
   });
   observer.observe(document.body, {
     subtree: true,
@@ -518,20 +552,22 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
       "class",
     ],
   });
-  window.addEventListener("resize", invalidate, { passive: true });
+  window.addEventListener("resize", () => invalidate(true), { passive: true });
   document.addEventListener(
     "scroll",
     () => {
-      dirty = true;
+      geometryDirty = true;
       refreshCursor();
     },
     { capture: true, passive: true },
   );
-  window.addEventListener("popstate", invalidate);
-  window.navigation?.addEventListener("navigatesuccess", invalidate);
-  setInterval(() => {
-    if (basePage !== location.href) invalidate();
-  }, 400);
+  window.addEventListener("popstate", () => invalidate(true));
+  window.navigation?.addEventListener("navigatesuccess", () => invalidate(true));
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && (dirty || basePage !== location.href)) invalidate(true);
+  });
+  // Chromium's Navigation API covers pushState/replaceState as well as navigation.
+  // Older engines still check the URL synchronously before every owned command.
   read();
   draw();
   // Introspection only; no remote execution bridge or page-driven command messages.
@@ -555,6 +591,6 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
       })),
       lastResult,
     }),
-    refresh: invalidate,
+    refresh: () => invalidate(true),
   };
 }
