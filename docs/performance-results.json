@@ -1,0 +1,781 @@
+{
+  "date": "2026-11-06",
+  "navigation": {
+    "before": {
+      "fixture": "YouTube grid: 1000 items / 5000+ elements; 1280x900; 2s idle; 2.4s class mutations; 40 j presses",
+      "startup": {
+        "taskMs": 148.93,
+        "scriptMs": 0,
+        "layoutMs": 0,
+        "reads": 1
+      },
+      "idle": {
+        "taskMs": 93.88,
+        "scriptMs": 46.21,
+        "layoutMs": 0,
+        "reads": 0
+      },
+      "churn": {
+        "taskMs": 968.4,
+        "scriptMs": 848.04,
+        "layoutMs": 0,
+        "reads": 16
+      },
+      "navigation": {
+        "taskMs": 1935.72,
+        "scriptMs": 1694.93,
+        "layoutMs": 5.79,
+        "reads": 35,
+        "handlerMedianMs": 42.70000000298023,
+        "handlerP95Ms": 82.79999999701977
+      },
+      "heap": {
+        "baselineBytes": 884628,
+        "loadedBytes": 1501992,
+        "extensionDeltaBytes": 617364,
+        "after5Cycles": 2121280,
+        "after20Cycles": 2159432
+      }
+    },
+    "after": {
+      "fixture": "YouTube grid: 1000 items / 5000+ elements; 1280x900; 2s idle; 2.4s class mutations; 40 j presses",
+      "startup": {
+        "taskMs": 154.77,
+        "scriptMs": 0,
+        "layoutMs": 0,
+        "reads": 1
+      },
+      "idle": {
+        "taskMs": 100.35,
+        "scriptMs": 46.64,
+        "layoutMs": 0,
+        "reads": 0
+      },
+      "churn": {
+        "taskMs": 95.77,
+        "scriptMs": 12.02,
+        "layoutMs": 0,
+        "reads": 0
+      },
+      "navigation": {
+        "taskMs": 521.4,
+        "scriptMs": 311.96,
+        "layoutMs": 2.11,
+        "reads": 1,
+        "handlerMedianMs": 6.200000002980232,
+        "handlerP95Ms": 12.699999988079071
+      },
+      "heap": {
+        "baselineBytes": 884628,
+        "loadedBytes": 1514812,
+        "extensionDeltaBytes": 630184,
+        "after5Cycles": 2173768,
+        "after20Cycles": 2216528
+      }
+    }
+  },
+  "pageLoads": [
+    {
+      "round": 0,
+      "version": "none",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "extension": null,
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 63.29999999701977,
+        "documentMs": 559.1000000089407,
+        "dclMs": 2855.0999999940395,
+        "loadMs": 3002.7999999970198,
+        "lcpMs": 4548,
+        "longTaskMs": 3123,
+        "scriptMs": 3723.881,
+        "layoutMs": 162.131,
+        "heapBytes": 76818264
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "before",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "extension": {
+        "startupMs": 4.399999991059303,
+        "adapter": "youtube",
+        "revision": 1,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 47.20000000298023,
+        "documentMs": 400.70000000298023,
+        "dclMs": 2622.7000000029802,
+        "loadMs": 2812.1000000089407,
+        "lcpMs": 4408,
+        "longTaskMs": 3294,
+        "scriptMs": 3745.825,
+        "layoutMs": 97.134,
+        "heapBytes": 72124264
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "after",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "extension": {
+        "startupMs": 3.1000000089406967,
+        "adapter": "youtube",
+        "revision": 8,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 93.6000000089407,
+        "documentMs": 478.59999999403954,
+        "dclMs": 2854.8999999910593,
+        "loadMs": 3023.2999999970198,
+        "lcpMs": 4320,
+        "longTaskMs": 3034,
+        "scriptMs": 3812.8540000000003,
+        "layoutMs": 93.756,
+        "heapBytes": 74973024
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "none",
+      "url": "https://duckduckgo.com/?q=vim+motions",
+      "extension": null,
+      "summary": {
+        "dnsMs": 1.6000000089406967,
+        "tlsMs": 36.5,
+        "ttfbMs": 66.90000000596046,
+        "documentMs": 28.399999991059303,
+        "dclMs": 1035.2999999970198,
+        "loadMs": 1319.199999988079,
+        "lcpMs": 1112,
+        "longTaskMs": 614,
+        "scriptMs": 782.3299999999999,
+        "layoutMs": 44.476,
+        "heapBytes": 13060588
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "before",
+      "url": "https://duckduckgo.com/?q=vim+motions",
+      "extension": {
+        "startupMs": 4.5999999940395355,
+        "adapter": "duckduckgo",
+        "revision": 2,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 28.5,
+        "documentMs": 30.299999997019768,
+        "dclMs": 882.4000000059605,
+        "loadMs": 1112.4000000059605,
+        "lcpMs": 944,
+        "longTaskMs": 540,
+        "scriptMs": 719.7040000000001,
+        "layoutMs": 20.275000000000002,
+        "heapBytes": 13481992
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "after",
+      "url": "https://duckduckgo.com/?q=vim+motions",
+      "extension": {
+        "startupMs": 3.7999999970197678,
+        "adapter": "duckduckgo",
+        "revision": 2,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 27.80000001192093,
+        "documentMs": 27.799999997019768,
+        "dclMs": 987.0999999940395,
+        "loadMs": 1227.9000000059605,
+        "lcpMs": 1068,
+        "longTaskMs": 498,
+        "scriptMs": 719.803,
+        "layoutMs": 20.69,
+        "heapBytes": 13471064
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "none",
+      "url": "https://github.com/Yikizi/web-vim",
+      "extension": null,
+      "summary": {
+        "dnsMs": 0.8999999910593033,
+        "tlsMs": 33.29999999701977,
+        "ttfbMs": 619.1000000089407,
+        "documentMs": 52,
+        "dclMs": 1924.4000000059605,
+        "loadMs": 2159.2999999970198,
+        "lcpMs": 1452,
+        "longTaskMs": 1047,
+        "scriptMs": 909.518,
+        "layoutMs": 205.003,
+        "heapBytes": 14828308
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "before",
+      "url": "https://github.com/Yikizi/web-vim",
+      "extension": {
+        "startupMs": 17.299999997019768,
+        "adapter": "generic",
+        "revision": 5,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 26.299999997019768,
+        "documentMs": 7.300000011920929,
+        "dclMs": 1501.9000000059605,
+        "loadMs": 1603.4000000059605,
+        "lcpMs": 904,
+        "longTaskMs": 986,
+        "scriptMs": 919.7959999999999,
+        "layoutMs": 165.605,
+        "heapBytes": 15256932
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "after",
+      "url": "https://github.com/Yikizi/web-vim",
+      "extension": {
+        "startupMs": 15.699999988079071,
+        "adapter": "generic",
+        "revision": 4,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 25.700000002980232,
+        "documentMs": 5.5,
+        "dclMs": 1554.5,
+        "loadMs": 1659.8999999910593,
+        "lcpMs": 992,
+        "longTaskMs": 1083,
+        "scriptMs": 894.799,
+        "layoutMs": 147.718,
+        "heapBytes": 17842584
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "none",
+      "url": "https://en.wikipedia.org/wiki/Vim_(text_editor)",
+      "extension": null,
+      "summary": {
+        "dnsMs": 1.2000000029802322,
+        "tlsMs": 36,
+        "ttfbMs": 351.5,
+        "documentMs": 312.8999999910593,
+        "dclMs": 1085.7000000029802,
+        "loadMs": 1240.7000000029802,
+        "lcpMs": 1012,
+        "longTaskMs": 136,
+        "scriptMs": 273.55899999999997,
+        "layoutMs": 159.789,
+        "heapBytes": 5166036
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "before",
+      "url": "https://en.wikipedia.org/wiki/Vim_(text_editor)",
+      "extension": {
+        "startupMs": 27.299999997019768,
+        "adapter": "generic",
+        "revision": 2,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 29.899999991059303,
+        "documentMs": 10.799999997019768,
+        "dclMs": 490.59999999403954,
+        "loadMs": 946.5999999940395,
+        "lcpMs": 480,
+        "longTaskMs": 0,
+        "scriptMs": 300.504,
+        "layoutMs": 150.927,
+        "heapBytes": 9822224
+      },
+      "error": null
+    },
+    {
+      "round": 0,
+      "version": "after",
+      "url": "https://en.wikipedia.org/wiki/Vim_(text_editor)",
+      "extension": {
+        "startupMs": 25.19999998807907,
+        "adapter": "generic",
+        "revision": 3,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 27.80000001192093,
+        "documentMs": 19.5,
+        "dclMs": 414,
+        "loadMs": 704,
+        "lcpMs": 396,
+        "longTaskMs": 57,
+        "scriptMs": 331.99899999999997,
+        "layoutMs": 144.559,
+        "heapBytes": 7821728
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "after",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "extension": {
+        "startupMs": 3.5,
+        "adapter": "youtube",
+        "revision": 8,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 53.900000005960464,
+        "documentMs": 449.8999999910593,
+        "dclMs": 2728.6000000089407,
+        "loadMs": 2938.300000011921,
+        "lcpMs": 4276,
+        "longTaskMs": 3118,
+        "scriptMs": 3847.521,
+        "layoutMs": 113.91,
+        "heapBytes": 75588492
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "before",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "extension": {
+        "startupMs": 3.0999999940395355,
+        "adapter": "youtube",
+        "revision": 1,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 66.3999999910593,
+        "documentMs": 452.80000001192093,
+        "dclMs": 2950.2999999970198,
+        "loadMs": 3115.1000000089407,
+        "lcpMs": 4664,
+        "longTaskMs": 3194,
+        "scriptMs": 3959.015,
+        "layoutMs": 103.325,
+        "heapBytes": 72577020
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "none",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "extension": null,
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 60.1000000089407,
+        "documentMs": 568.2999999970198,
+        "dclMs": 3030.5999999940395,
+        "loadMs": 3175.5,
+        "lcpMs": 4416,
+        "longTaskMs": 3425,
+        "scriptMs": 3953.58,
+        "layoutMs": 113.43499999999999,
+        "heapBytes": 63592752
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "after",
+      "url": "https://duckduckgo.com/?q=vim+motions",
+      "extension": {
+        "startupMs": 6.5,
+        "adapter": "duckduckgo",
+        "revision": 2,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 30.80000001192093,
+        "ttfbMs": 68.29999999701977,
+        "documentMs": 28.5,
+        "dclMs": 999.7000000029802,
+        "loadMs": 1295,
+        "lcpMs": 1064,
+        "longTaskMs": 588,
+        "scriptMs": 782.292,
+        "layoutMs": 29.468,
+        "heapBytes": 13069832
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "before",
+      "url": "https://duckduckgo.com/?q=vim+motions",
+      "extension": {
+        "startupMs": 5,
+        "adapter": "duckduckgo",
+        "revision": 2,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 29.5,
+        "documentMs": 27.399999991059303,
+        "dclMs": 1260.6000000089407,
+        "loadMs": 1554.7999999970198,
+        "lcpMs": 716,
+        "longTaskMs": 979,
+        "scriptMs": 1074.925,
+        "layoutMs": 33.004,
+        "heapBytes": 13051716
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "none",
+      "url": "https://duckduckgo.com/?q=vim+motions",
+      "extension": null,
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 29.599999994039536,
+        "documentMs": 29.700000002980232,
+        "dclMs": 1033.4000000059605,
+        "loadMs": 1282.2000000029802,
+        "lcpMs": 612,
+        "longTaskMs": 504,
+        "scriptMs": 755.62,
+        "layoutMs": 24.337999999999997,
+        "heapBytes": 12787204
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "after",
+      "url": "https://github.com/Yikizi/web-vim",
+      "extension": {
+        "startupMs": 14.799999997019768,
+        "adapter": "generic",
+        "revision": 4,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 27.5,
+        "ttfbMs": 443.29999999701977,
+        "documentMs": 51.79999999701977,
+        "dclMs": 1930,
+        "loadMs": 2016.0999999940395,
+        "lcpMs": 1324,
+        "longTaskMs": 955,
+        "scriptMs": 878.2560000000001,
+        "layoutMs": 137.795,
+        "heapBytes": 18856256
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "before",
+      "url": "https://github.com/Yikizi/web-vim",
+      "extension": {
+        "startupMs": 18.5,
+        "adapter": "generic",
+        "revision": 3,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 24.900000005960464,
+        "documentMs": 6.5999999940395355,
+        "dclMs": 1305.2999999970198,
+        "loadMs": 1499.6000000089407,
+        "lcpMs": 1116,
+        "longTaskMs": 1032,
+        "scriptMs": 887.619,
+        "layoutMs": 106.048,
+        "heapBytes": 17859400
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "none",
+      "url": "https://github.com/Yikizi/web-vim",
+      "extension": null,
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 25.5,
+        "documentMs": 7.199999988079071,
+        "dclMs": 1416.7999999970198,
+        "loadMs": 1552.8999999910593,
+        "lcpMs": 924,
+        "longTaskMs": 948,
+        "scriptMs": 779.121,
+        "layoutMs": 107.359,
+        "heapBytes": 17410836
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "after",
+      "url": "https://en.wikipedia.org/wiki/Vim_(text_editor)",
+      "extension": {
+        "startupMs": 21.5,
+        "adapter": "generic",
+        "revision": 3,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 26.099999994039536,
+        "documentMs": 7.300000011920929,
+        "dclMs": 324.69999998807907,
+        "loadMs": 567.2999999970198,
+        "lcpMs": 344,
+        "longTaskMs": 0,
+        "scriptMs": 264.96999999999997,
+        "layoutMs": 92.72800000000001,
+        "heapBytes": 7860068
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "before",
+      "url": "https://en.wikipedia.org/wiki/Vim_(text_editor)",
+      "extension": {
+        "startupMs": 26.899999991059303,
+        "adapter": "generic",
+        "revision": 2,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 26.100000008940697,
+        "documentMs": 6.5,
+        "dclMs": 374.3999999910593,
+        "loadMs": 599.2999999970198,
+        "lcpMs": 396,
+        "longTaskMs": 59,
+        "scriptMs": 311.40000000000003,
+        "layoutMs": 113.667,
+        "heapBytes": 7466620
+      },
+      "error": null
+    },
+    {
+      "round": 1,
+      "version": "none",
+      "url": "https://en.wikipedia.org/wiki/Vim_(text_editor)",
+      "extension": null,
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 28,
+        "documentMs": 9.199999988079071,
+        "dclMs": 159.79999999701977,
+        "loadMs": 543.0999999940395,
+        "lcpMs": 484,
+        "longTaskMs": 225,
+        "scriptMs": 261.96999999999997,
+        "layoutMs": 96.509,
+        "heapBytes": 6449260
+      },
+      "error": null
+    }
+  ],
+  "youtubeLoadsWithConsent": [
+    {
+      "round": 0,
+      "version": "none",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "visibleDialogs": 0,
+      "extension": null,
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 59.5,
+        "documentMs": 505.5,
+        "dclMs": 3015,
+        "loadMs": 3273.7999999970198,
+        "lcpMs": 4668,
+        "longTaskMs": 3496,
+        "scriptMs": 4192.528,
+        "layoutMs": 89.835,
+        "heapBytes": 75956180
+      }
+    },
+    {
+      "round": 0,
+      "version": "before",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "visibleDialogs": 0,
+      "extension": {
+        "startupMs": 6.200000002980232,
+        "adapter": "youtube",
+        "revision": 2,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 67.79999999701977,
+        "documentMs": 364.70000000298023,
+        "dclMs": 3152.5999999940395,
+        "loadMs": 3575.5999999940395,
+        "lcpMs": 5012,
+        "longTaskMs": 3640,
+        "scriptMs": 4136.317,
+        "layoutMs": 90.53,
+        "heapBytes": 79945008
+      }
+    },
+    {
+      "round": 0,
+      "version": "after",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "visibleDialogs": 0,
+      "extension": {
+        "startupMs": 4.200000002980232,
+        "adapter": "youtube",
+        "revision": 9,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 57.70000000298023,
+        "documentMs": 385.70000000298023,
+        "dclMs": 2809.7000000029802,
+        "loadMs": 3144.3999999910593,
+        "lcpMs": 4524,
+        "longTaskMs": 3436,
+        "scriptMs": 3881.263,
+        "layoutMs": 97.491,
+        "heapBytes": 80756296
+      }
+    },
+    {
+      "round": 1,
+      "version": "after",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "visibleDialogs": 0,
+      "extension": {
+        "startupMs": 4.0999999940395355,
+        "adapter": "youtube",
+        "revision": 8,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 44.099999994039536,
+        "documentMs": 403.20000000298023,
+        "dclMs": 3206.9000000059605,
+        "loadMs": 3239.7000000029802,
+        "lcpMs": 4708,
+        "longTaskMs": 3096,
+        "scriptMs": 3887.884,
+        "layoutMs": 87.029,
+        "heapBytes": 68881084
+      }
+    },
+    {
+      "round": 1,
+      "version": "before",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "visibleDialogs": 0,
+      "extension": {
+        "startupMs": 7.700000002980232,
+        "adapter": "youtube",
+        "revision": 2,
+        "errors": []
+      },
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 57.70000000298023,
+        "documentMs": 437.29999999701977,
+        "dclMs": 2987.2000000029802,
+        "loadMs": 3344.7000000029802,
+        "lcpMs": 4840,
+        "longTaskMs": 3399,
+        "scriptMs": 4010.9190000000003,
+        "layoutMs": 87.051,
+        "heapBytes": 79677996
+      }
+    },
+    {
+      "round": 1,
+      "version": "none",
+      "url": "https://www.youtube.com/results?search_query=vim+motions",
+      "visibleDialogs": 0,
+      "extension": null,
+      "summary": {
+        "dnsMs": 0,
+        "tlsMs": 0,
+        "ttfbMs": 70.70000000298023,
+        "documentMs": 351.29999999701977,
+        "dclMs": 3105.9000000059605,
+        "loadMs": 3412.7999999970198,
+        "lcpMs": 4768,
+        "longTaskMs": 3413,
+        "scriptMs": 4021.8689999999997,
+        "layoutMs": 91.019,
+        "heapBytes": 76968520
+      }
+    }
+  ]
+}
