@@ -1,0 +1,33 @@
+{
+  "name": "web-vim",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/*.test.js",
+    "test:browser": "npm run build && node test/browser.mjs",
+    "check": "npm run format:check && npm test && npm run test:browser",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "hooks:install": "git config --local core.hooksPath .githooks"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "prettier": "3.9.10",
+    "puppeteer-core": "25.16.0"
+  },
+  "description": "Semantic keyboard navigation for the web, with native-friendly site adapters.",
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yikizi/web-vim.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Yikizi/web-vim/issues"
+  },
+  "homepage": "https://github.com/Yikizi/web-vim#readme"
+}

@@ -1,0 +1,26 @@
+name: Keyboard or navigation bug
+description: Report a broken flow or a shortcut conflict.
+labels: [bug]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Website and page type
+      description: Share a public URL or describe the view. Remove private query parameters.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Keys pressed, expected behavior, and actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, OS and Web Vim version
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Optional diagnostics
+      description: Adapter name, g? output, or a redacted console error. Avoid private page content.
