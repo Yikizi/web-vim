@@ -660,11 +660,11 @@ function openPicker({
     let generation = 0;
     let done = false;
 
-    const finish = (value) => {
+    const finish = (value, event) => {
       if (done) return;
       done = true;
       close();
-      resolve(value);
+      resolve(value ? { ...value, trusted: Boolean(event?.isTrusted) } : null);
     };
 
     const render = () => {
@@ -692,7 +692,7 @@ function openPicker({
         }
         li.addEventListener("mousedown", (e) => {
           e.preventDefault();
-          finish(item);
+          finish(item, e);
         });
         list.appendChild(li);
       });
@@ -728,7 +728,7 @@ function openPicker({
       let handled = true;
 
       if (e.key === "Escape") finish(null);
-      else if (e.key === "Enter") finish(items[active] || null);
+      else if (e.key === "Enter") finish(items[active] || null, e);
       else if (
         e.key === "ArrowDown" ||
         (e.key === "Tab" && !e.shiftKey) ||

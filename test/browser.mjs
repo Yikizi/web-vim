@@ -676,6 +676,43 @@ try {
     assert.match((await state()).selection.item, /item20$/);
     assert.ok(await page.evaluate(() => scrollY > 0));
   });
+  await load("https://www.youtube.com/", '<input name="search_query">');
+  await keys(":");
+  await page.keyboard.type("Search YouTube");
+  await keys("Enter");
+  await check("palette includes page actions without requiring a selection", async () =>
+    assert.equal(await page.evaluate(() => document.activeElement.name), "search_query"),
+  );
+  await load("https://example.test/empty", "<main><p>No interactive items</p></main>");
+  await keys(":");
+  await page.keyboard.type("Available keys");
+  await keys("Enter");
+  await check("palette exposes navigation and help even on an empty page", async () =>
+    assert.ok(
+      await page.evaluate(() =>
+        document.querySelector("[data-keybinds-ui]").shadowRoot.querySelector(".help"),
+      ),
+    ),
+  );
+  await keys("Escape");
+  await load("https://duckduckgo.com/?q=thinkpad", searchFixture);
+  await keys("g", ":");
+  await page.keyboard.type("Search view: images");
+  await keys("Enter");
+  await check(
+    "g-colon exposes native-site page commands without taking colon",
+    async () => assert.equal(new URL(page.url()).searchParams.get("ia"), "images"),
+  );
+  await load(
+    "https://example.test/dialog-action",
+    '<main><a href="/base">Base</a></main><dialog open><button onclick="window.dialogClicked=true">Run</button></dialog>',
+  );
+  await keys("j", ":");
+  await page.keyboard.type("activate");
+  await keys("Enter");
+  await check("palette preserves dialog-scoped selection identity", async () =>
+    assert.equal(await page.evaluate(() => window.dialogClicked), true),
+  );
   await check("no runtime errors", async () => assert.deepEqual(failures, []));
   console.log(`${passed} browser checks passed`);
 } finally {
