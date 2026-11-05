@@ -20,7 +20,8 @@ await writeFile(
       name: "Web Vim",
       version: pkg.version,
       description: "Semantic keyboard navigation with validated site adapters.",
-      permissions: ["clipboardWrite"],
+      permissions: ["clipboardWrite", "bookmarks", "sessions"],
+      background: { service_worker: "background.js", type: "module" },
       content_scripts: [
         {
           matches: ["http://*/*", "https://*/*"],
@@ -33,4 +34,11 @@ await writeFile(
     2,
   ) + "\n",
 );
+await build({
+  entryPoints: [root + "src/background.js"],
+  bundle: true,
+  format: "esm",
+  target: "chrome120",
+  outfile: root + "dist/extension/background.js",
+});
 console.log("Built dist/extension");

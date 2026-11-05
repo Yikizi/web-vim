@@ -35,7 +35,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for commit conventions, PR workflow and t
 
 ## Native keyboard ownership
 
-DuckDuckGo and its subdomains start in native mode: its own handlers retain `j/k`, `/`, `o`, `v`, `m`, digits, text input and Escape. Web Vim adds only `gi` (Images), `gn` (News), `gv` (Videos), `gm` (Maps), and `gw` (Web). Press the two letters in sequence within one second, outside a text field. These commands click the currently rendered view link for the same query; missing or ambiguous destinations fail without navigation.
+DuckDuckGo and its subdomains start in native mode: its own handlers retain `j/k`, `/`, `o`, `v`, `m`, digits, text input and Escape. Web Vim adds `gi` (Images), `gn` (News), `gv` (Videos), `gm` (Maps), `gw` (Web), and `g:` (action search). Press the two keys in sequence within one second, outside a text field. View commands click the currently rendered link for the same query; missing or ambiguous destinations fail without navigation.
 
 On DuckDuckGo, `Ctrl-Esc` disables/re-enables these additions without taking over native navigation. Other sites retain the normal/passthrough toggle. Known native-site policy lives in `src/site-policies.js`, separate from DOM adapters and the site-independent core. Other native keyboard sites are not automatically detected yet.
 
@@ -53,7 +53,7 @@ On DuckDuckGo, `Ctrl-Esc` disables/re-enables these additions without taking ove
 | `J` / `K`   | Next/previous region (Shift-j / Shift-k)               |
 | `gs`        | Focus page search; choose if ambiguous                 |
 | `f`         | Fuzzy-find an object by its own text; Enter selects it |
-| `:`         | Search the selected object's available actions         |
+| `:` / `g:`  | Search selection, page, navigation and browser actions |
 | `?`         | Available keybindings                                  |
 | `g?`        | Inspect adapter regions and contract failures          |
 | `H` / `L`   | Browser back/forward                                   |
@@ -62,6 +62,24 @@ On DuckDuckGo, `Ctrl-Esc` disables/re-enables these additions without taking ove
 | `Ctrl-Esc`  | Toggle complete passthrough (also works in an editor)  |
 
 Typing, IME composition and Alt/Meta shortcuts are left to their owners. Use the browser's `Ctrl-d` to bookmark, `Ctrl-u` for page source, and `Ctrl-f` for page-text search; `/` focuses search on YouTube and is otherwise left unbound. The virtual selection does not continuously steal native DOM focus. Focus is transferred for explicit focus/search actions.
+
+### Find an action
+
+Press `:` and type what you want to do. `g:` also works on native-keyboard sites, where plain `:` stays with the site. Search includes:
+
+- Selected-item capabilities, with their currently available shortcuts.
+- Site/page actions even with no selection, and navigation/help commands.
+- Move tab to new window (`detach` / `popout`), duplicate, pin/unpin, mute/unmute, reopen last closed tab or window, new/close tab and new window.
+- Bookmark this page, zoom in/out/reset, reload/bypass cache, copy page URL and print/save as PDF.
+- Downloads, browsing history, bookmark manager, settings, extensions and extension-shortcut settings.
+
+Each result shows its scope and existing shortcut, where applicable; these hints do not install new browser keybindings. Bookmarking adds the current page only if it is not already saved; `Ctrl+D` still opens the browser's native bookmark UI. Browser commands target the tab that opened the picker and require real keyboard/pointer input. There is no page-to-extension command bridge.
+
+The extension uses `bookmarks` permission to save a page and `sessions` to restore closed tabs/windows. It does not need the broad `tabs` or `history` permissions, and opening the native history/downloads pages does not read their contents. The service worker wakes for explicit browser commands; there is no background polling. The picker itself is available on ordinary HTTP(S) pages, not browser-internal pages.
+
+### Performance measurements
+
+See [the profiling notes](docs/performance.md) for reproducible CPU, heap and page-load measurements. `scripts/profile.mjs` records CPU profiles and post-GC heap measurements in a disposable context. `scripts/profile-load.mjs` compares real cold-HTTP-cache page loads with no Web Vim, the prior build and the current build in a separate disposable browser.
 
 YouTube adds `gh` (home), `gs` / `s` (subscriptions), `/` (search), `gc` (comments), `gv` (playing video), `u` (like/unlike the playing video or selected comment), `w` (Watch later), and `x` (Not interested). In comments, `j/k` traverses visible comments and replies; `l` expands and enters replies, and `h` returns to the parent. `gg/G` stay in the active section; `zz/zt/zb` align the selection. Counts and `?` use the common engine. Shorts links and routes continue to open in the normal video player; there is no Shorts-feed shortcut. Reddit adds `u/d` (vote), `s` (save), `x` (hide), `r` (reply), and `za/zc/zo` (toggle/collapse/expand). Menu actions report execution, not account-state confirmation. Their availability depends on the actual page and login state.
 
@@ -116,8 +134,8 @@ Selection is stored by page/region/item identity, not index or element reference
 - The browser suite covers rerendering, deletion, column persistence, tree traversal/collapse, route/dialog restoration, fuzzy pickers, shadow-root input, passthrough, invalid adapters and stale async actions.
 - The original Reddit's subreddit/search/sort pickers, media/gallery controls, bulk folding, and explicit load-more behavior have not been migrated. YouTube comments now have a tree region; playlist panels and explicit load-more controls still need coverage. These remain migration work, not silently claimed parity.
 - No Jev integration yet. Its future input should be observed region/control candidates; its output should be constrained data validated by this contract. No generated JavaScript execution.
-- No iframe coordination, closed-shadow traversal, canvas navigation, browser chrome integration or OS pointer layer. The DOM fallback is not a full accessibility-tree implementation.
-- Snapshot invalidation is currently per adapter, not incremental per region. The grid algorithm handles regular rows; irregular masonry layouts need more fixtures.
+- No iframe coordination, closed-shadow traversal, canvas navigation or OS pointer layer. Browser API commands are supported, but the picker cannot run on browser-internal pages. The DOM fallback is not a full accessibility-tree implementation.
+- Structural changes still rebuild the adapter snapshot. Scrolling only refreshes geometry; style/text churn is read on the next owned command, and text input/unowned shortcuts do not scan the DOM. Hidden documents defer refreshes until visible. The grid algorithm handles regular rows; irregular masonry layouts need more fixtures.
 - Selection memory uses tab sessionStorage and contains IDs/URLs. No browsing data is sent to a model or service.
 
 ## License

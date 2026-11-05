@@ -62,10 +62,15 @@ const keyState = {
 
 let eventGate = () => true;
 let contextProvider = () => ({});
+let prepareInput = () => {};
 
-function loadKeybinds(bindings, { gate = () => true, context = () => ({}) } = {}) {
+function loadKeybinds(
+  bindings,
+  { gate = () => true, context = () => ({}), prepare = () => {} } = {},
+) {
   eventGate = gate;
   contextProvider = context;
+  prepareInput = prepare;
   keyState.bindings = bindings.map((binding) => ({
     ...binding,
     tokens: parseKeys(binding.keys),
@@ -90,6 +95,15 @@ function onKeydown(e) {
 
   const token = eventToToken(e);
   if (!token) return;
+
+  // Typing, modifier keys and unowned browser/native shortcuts never scan the page.
+  if (
+    keyState.pending.length ||
+    keyState.bindings.some(
+      (b) => b.tokens[0] === token && (!b.when || b.when(buildContext())),
+    )
+  )
+    prepareInput();
 
   if (!keyState.pending.length && handleCountPrefix(e)) return;
 
@@ -646,11 +660,11 @@ function openPicker({
     let generation = 0;
     let done = false;
 
-    const finish = (value) => {
+    const finish = (value, event) => {
       if (done) return;
       done = true;
       close();
-      resolve(value);
+      resolve(value ? { ...value, trusted: Boolean(event?.isTrusted) } : null);
     };
 
     const render = () => {
@@ -678,7 +692,7 @@ function openPicker({
         }
         li.addEventListener("mousedown", (e) => {
           e.preventDefault();
-          finish(item);
+          finish(item, e);
         });
         list.appendChild(li);
       });
@@ -697,8 +711,10 @@ function openPicker({
 
     const move = (delta) => {
       if (!items.length) return;
+      list.children[active]?.classList.remove("active");
       active = (active + delta + items.length) % items.length;
-      render();
+      list.children[active]?.classList.add("active");
+      list.children[active]?.scrollIntoView({ block: "nearest" });
     };
 
     input.addEventListener("input", () => {
@@ -712,7 +728,7 @@ function openPicker({
       let handled = true;
 
       if (e.key === "Escape") finish(null);
-      else if (e.key === "Enter") finish(items[active] || null);
+      else if (e.key === "Enter") finish(items[active] || null, e);
       else if (
         e.key === "ArrowDown" ||
         (e.key === "Tab" && !e.shiftKey) ||

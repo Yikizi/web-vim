@@ -13,11 +13,17 @@ import {
   resetPending,
 } from "./keyboard-ui.js";
 import { visible, rect, deepAll, label } from "./dom.js";
+import {
+  browserActions,
+  hasBrowserActions,
+  runBrowserAction,
+} from "../browser-actions.js";
 
 export function start(adapters, { fallback, readDialog, policy = {} }) {
   let adapter = adapters.find((a) => a.matches()) || fallback;
   const nav = new Navigation();
   let dirty = true,
+    geometryDirty = false,
     mode = policy.defaultMode ?? "normal",
     busy = false,
     errors = [],
@@ -35,17 +41,36 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
       sessionStorage.setItem(storageKey, JSON.stringify([...nav.memory]));
     } catch {}
   }
-  function invalidate() {
+  function invalidate(rebuild = false) {
     dirty = true;
-    clearTimeout(timer);
+    // Coalesce DOM noise. Rebuild in the background only for structural changes;
+    // style/text churn is read on the next owned command, not every video frame.
+    needsRebuild ||= rebuild;
+    if (timer || document.hidden) return;
     timer = setTimeout(() => {
-      read();
-      draw();
+      timer = null;
+      if (document.hidden) return;
+      if (needsRebuild || (nav.item() && !visible(nav.item().element))) read();
+      if (nav.itemId) draw();
     }, 80);
   }
+  let needsRebuild = false;
   function read() {
-    if (!dirty) return errors.length ? null : nav.snapshot;
+    if (basePage !== location.href) dirty = true;
+    if (!dirty) {
+      if (geometryDirty) {
+        const region = nav.region();
+        // Lists/trees navigate by identity. Only grids and first selection need
+        // cached viewport coordinates; scrolling does not change DOM semantics.
+        if (region?.kind === "grid" || !nav.itemId)
+          for (const item of region?.items || []) item.rect = rect(item.element);
+        geometryDirty = false;
+      }
+      return errors.length ? null : nav.snapshot;
+    }
     dirty = false;
+    geometryDirty = false;
+    needsRebuild = false;
     try {
       adapter = adapters.find((a) => a.matches()) || fallback;
       const redirect = adapter.redirect?.();
@@ -167,7 +192,7 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
         ? (before.top + before.bottom) / 2
         : innerHeight / 2;
     window.scrollBy({ top: direction * innerHeight * 0.5 * count, behavior: "instant" });
-    dirty = true;
+    geometryDirty = true;
     if (!read()) return;
     const candidates = (nav.region()?.items || [])
       .map((item) => ({ item, r: rect(item.element) }))
@@ -187,7 +212,7 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
       (!item && !pageAction) ||
       (expected &&
         (expected.page !== nav.snapshot.pageKey ||
-          expected.id !== item.id ||
+          expected.id !== item?.id ||
           expected.region !== nav.regionId))
     )
       return unavailable("Selection changed");
@@ -253,15 +278,78 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
     return lastResult;
   }
   async function pick(kind) {
-    if (!read()) return;
-    const page = nav.snapshot.pageKey,
+    const snapshot = read();
+    if (!snapshot && kind !== "actions") return;
+    const page = location.href,
       selected = nav.item();
     let options;
     if (kind === "actions") {
-      options = (selected?.actions || []).map((action) => ({
+      const keysFor = (action, scope) =>
+        binds
+          .filter(
+            (b) =>
+              b.when() &&
+              (scope === "item" || b.scope === scope) &&
+              (b.capability === action ||
+                (scope === "item" &&
+                  b.capability === "primary" &&
+                  selected?.primaryAction === action)),
+          )
+          .map((b) => (b.keys === "<CR>" ? "Enter" : b.keys))
+          .join(" / ");
+      options = (snapshot ? selected?.actions || [] : []).map((action) => ({
         label: action,
-        value: { action, id: selected.id, region: nav.regionId, page },
+        detail: ["Selection", keysFor(action, "item")].filter(Boolean).join(" · "),
+        value: {
+          kind: "item",
+          action,
+          id: selected.id,
+          region: nav.regionId,
+          page: snapshot.pageKey,
+        },
       }));
+      if (snapshot && !dialog)
+        for (const action of adapter.pageActions || []) {
+          const shortcut = adapter.shortcuts?.find(
+            (s) => s.scope === "page" && s.action === action,
+          );
+          options.push({
+            label: shortcut?.label || action,
+            keywords: action,
+            detail: ["Page", keysFor(action, "page")].filter(Boolean).join(" · "),
+            value: { kind: "page", action },
+          });
+        }
+      for (const b of binds.filter(
+        (b) => b.when() && !b.capability && ![":", "g:", "<Esc>"].includes(b.keys),
+      ))
+        options.push({
+          label: b.desc,
+          detail: "Navigation · " + b.keys,
+          value: { kind: "binding", binding: b },
+        });
+      options.push(
+        {
+          label: "Copy page URL",
+          keywords: "address link clipboard",
+          detail: "Page",
+          value: { kind: "copyUrl" },
+        },
+        {
+          label: "Print page / save as PDF",
+          keywords: "export document",
+          detail: "Browser · Ctrl+P",
+          value: { kind: "print" },
+        },
+      );
+      if (hasBrowserActions())
+        for (const action of browserActions)
+          options.push({
+            label: action.label,
+            keywords: action.keywords,
+            detail: ["Browser", action.keys].filter(Boolean).join(" · "),
+            value: { kind: "browser", action: action.id },
+          });
     } else
       options = nav.snapshot.regions.flatMap((r) =>
         r.items.map((i) => ({
@@ -275,13 +363,33 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
       placeholder: kind === "actions" ? "Find an action" : "Find an item by its text",
       source: (q) =>
         options
-          .map((o) => ({ ...o, score: fuzzyMatch(o.label, q)?.score }))
+          .map((o) => ({
+            ...o,
+            score: fuzzyMatch(o.label + " " + (o.keywords || ""), q)?.score,
+          }))
           .filter((o) => o.score !== undefined)
           .sort((a, b) => b.score - a.score),
     });
-    if (!result || !read() || nav.snapshot.pageKey !== page) return;
-    if (kind === "actions") await act(result.value.action, result.value);
-    else {
+    if (!result || location.href !== page) return;
+    if (kind === "actions") {
+      const value = result.value;
+      if (value.kind === "item") await act(value.action, value);
+      else if (value.kind === "page") await act(value.action, undefined, true);
+      else if (value.kind === "browser") {
+        const outcome = await runBrowserAction(value.action, result.trusted);
+        if (outcome?.status === "confirmed") showToast(outcome.evidence);
+        else if (outcome?.status !== "executed")
+          showToast(outcome?.reason || "Browser action failed", "error");
+      } else if (value.kind === "binding") {
+        read();
+        if (value.binding.when())
+          await value.binding.action({ count: 1, hasCount: false, repeat: false });
+      } else if (value.kind === "copyUrl") {
+        await copyText(location.href);
+        showToast("Page URL copied");
+      } else if (value.kind === "print" && result.trusted) window.print();
+    } else {
+      if (!read() || nav.snapshot.pageKey !== page) return;
       nav.select(result.value.id, result.value.region);
       reveal();
     }
@@ -326,16 +434,19 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
     });
   }
   const binds = [];
-  const bind = (keys, desc, action, when) =>
+  const bind = (keys, desc, action, when, capability, scope = "item") =>
     binds.push({
       keys,
       desc,
+      capability,
+      scope,
       group: "Web Vim",
       action,
       when: () =>
         (mode === "normal" ||
-          (mode === "native" && policy.supplementalKeys?.includes(keys))) &&
-        (keys === "g?" || keys === "?" || !errors.length) &&
+          (mode === "native" &&
+            (keys === "g:" || policy.supplementalKeys?.includes(keys)))) &&
+        (["g?", "?", ":", "g:"].includes(keys) || !errors.length) &&
         (!when || when()),
     });
   bind("j", "Down", (c) => move("down", c.count));
@@ -394,7 +505,7 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
     ["O", "openNew"],
     ["y", "copy"],
   ])
-    bind(keys, action, () => act(action));
+    bind(keys, action, () => act(action), undefined, action);
   bind("J", "Next region", () => {
     read();
     nav.switchRegion(1);
@@ -412,6 +523,7 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
     () => !adapter.shortcuts?.some((s) => s.keys === "gs"),
   );
   bind(":", "Find action", () => pick("actions"));
+  bind("g:", "Find action (including native sites)", () => pick("actions"));
   bind("f", "Find object by text", () => pick("objects"));
   bind("?", "Available keys", () => showHelp("Web Vim"));
   bind("g?", "Inspect adapter contract", inspect);
@@ -464,8 +576,11 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
               ? a.pageActions?.includes(shortcut.action)
               : nav.item()?.actions.includes(shortcut.action)),
           ),
+        shortcut.region ? undefined : shortcut.action,
+        shortcut.scope || "item",
       );
   loadKeybinds(binds, {
+    prepare: read,
     context: () => ({
       native: mode === "native",
       counts: mode === "normal" && !errors.length && Boolean(nav.region()?.items.length),
@@ -481,7 +596,6 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
         return false;
       }
       if (mode === "passthrough") return false;
-      read();
       return true;
     },
   });
@@ -498,7 +612,21 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
           ),
       )
     )
-      invalidate();
+      invalidate(
+        records.some(
+          (r) =>
+            r.type === "childList" ||
+            [
+              "open",
+              "aria-modal",
+              "role",
+              "hidden",
+              "aria-hidden",
+              "collapsed",
+              "aria-expanded",
+            ].includes(r.attributeName),
+        ),
+      );
   });
   observer.observe(document.body, {
     subtree: true,
@@ -518,20 +646,22 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
       "class",
     ],
   });
-  window.addEventListener("resize", invalidate, { passive: true });
+  window.addEventListener("resize", () => invalidate(true), { passive: true });
   document.addEventListener(
     "scroll",
     () => {
-      dirty = true;
+      geometryDirty = true;
       refreshCursor();
     },
     { capture: true, passive: true },
   );
-  window.addEventListener("popstate", invalidate);
-  window.navigation?.addEventListener("navigatesuccess", invalidate);
-  setInterval(() => {
-    if (basePage !== location.href) invalidate();
-  }, 400);
+  window.addEventListener("popstate", () => invalidate(true));
+  window.navigation?.addEventListener("navigatesuccess", () => invalidate(true));
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && (dirty || basePage !== location.href)) invalidate(true);
+  });
+  // Chromium's Navigation API covers pushState/replaceState as well as navigation.
+  // Older engines still check the URL synchronously before every owned command.
   read();
   draw();
   // Introspection only; no remote execution bridge or page-driven command messages.
@@ -555,6 +685,6 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
       })),
       lastResult,
     }),
-    refresh: invalidate,
+    refresh: () => invalidate(true),
   };
 }
