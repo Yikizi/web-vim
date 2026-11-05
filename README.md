@@ -119,3 +119,7 @@ Selection is stored by page/region/item identity, not index or element reference
 - No iframe coordination, closed-shadow traversal, canvas navigation, browser chrome integration or OS pointer layer. The DOM fallback is not a full accessibility-tree implementation.
 - Snapshot invalidation is currently per adapter, not incremental per region. The grid algorithm handles regular rows; irregular masonry layouts need more fixtures.
 - Selection memory uses tab sessionStorage and contains IDs/URLs. No browsing data is sent to a model or service.
+
+## License
+
+[MIT](LICENSE) © 2026 Mattias Linholm.
