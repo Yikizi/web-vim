@@ -289,7 +289,7 @@ export function start(adapters, { fallback, readDialog, policy = {} }) {
           .filter(
             (b) =>
               b.when() &&
-              b.scope === scope &&
+              (scope === "item" || b.scope === scope) &&
               (b.capability === action ||
                 (scope === "item" &&
                   b.capability === "primary" &&

@@ -713,6 +713,28 @@ try {
   await check("palette preserves dialog-scoped selection identity", async () =>
     assert.equal(await page.evaluate(() => window.dialogClicked), true),
   );
+  await load(
+    "https://www.youtube.com/watch?v=test",
+    "<ytd-watch-metadata><h1>Playing video</h1></ytd-watch-metadata>",
+  );
+  await keys("j", ":");
+  await check(
+    "item actions retain shortcuts shared with contextual page actions",
+    async () => {
+      const hint = await page.evaluate(
+        () =>
+          [
+            ...document
+              .querySelector("[data-keybinds-ui]")
+              .shadowRoot.querySelectorAll(".item"),
+          ]
+            .find((el) => el.querySelector(".item-label").textContent === "like")
+            ?.querySelector(".item-detail").textContent,
+      );
+      assert.equal(hint, "Selection · u");
+    },
+  );
+  await keys("Escape");
   await check("no runtime errors", async () => assert.deepEqual(failures, []));
   console.log(`${passed} browser checks passed`);
 } finally {
